@@ -50,5 +50,8 @@ describe('App', () => {
     component.find('form').simulate('submit')
     expect(mockAxios.post).toHaveBeenCalled();
   });
-
+  it('loads data from api', () => {
+    mount(<MessageApp />);
+    expect(mockAxios.get).toHaveBeenCalledTimes(1);
+  });
 });
