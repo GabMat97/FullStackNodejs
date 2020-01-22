@@ -12,7 +12,6 @@ class MessageApp extends React.Component {
         content: data
       })
       .then((result)=>{
-        console.log(result)
       })
     }
 
@@ -20,12 +19,7 @@ class MessageApp extends React.Component {
     return (
       <div className="App">
       <MessageForm
-<<<<<<< HEAD
-      // submitMessage={}
-=======
-      submitMessage={this.submitMessage}
->>>>>>> e0af37a9ab3e42782abaf0a243a88505dbb140ff
-      />
+      submitMessage={this.submitMessage}/>
       <MessageList/>
       </div>
     );
