@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import MessageApp from '../App'
 import mockAxios from '../__mocks__/axios.js'
+import errorMock from '../__mocks__/error.json'
 
 import Enzyme from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
@@ -40,19 +41,46 @@ describe('App', () => {
   });
 
   // it('has message list', () => {
-  //   const component = mount(<MessageApp/>);
-  //   console.log(component.state());
-  //   expect(component.exists('ul#message_list')).toBe(true);
-  // });
+    //   const component = mount(<MessageApp/>);
+    //   console.log(component.state());
+    //   expect(component.exists('ul#message_list')).toBe(true);
+    // });
 
-  it('posts data on submit', () => {
-    const component = mount(<MessageApp/>);
-    component.find('textarea#message_box').simulate('change', { target: { value: 'Hello' } })
-    component.find('form').simulate('submit')
-    expect(mockAxios.post).toHaveBeenCalled();
+    it('posts data on submit', () => {
+      const component = mount(<MessageApp/>);
+      component.find('textarea#message_box').simulate('change', { target: { value: 'Hello' } })
+      component.find('form').simulate('submit')
+      expect(mockAxios.post).toHaveBeenCalled();
+    });
+    it('loads data from api', () => {
+      mount(<MessageApp />);
+      expect(mockAxios.get).toHaveBeenCalledTimes(1);
+    });
   });
-  it('loads data from api', () => {
-    mount(<MessageApp />);
-    expect(mockAxios.get).toHaveBeenCalledTimes(1);
+
+  describe('MessageApp erroring', () => {
+    beforeEach(function(){
+      mockAxios.post.mockImplementation(() =>
+      Promise.reject({ data: errorMock }));
+      mockAxios.get.mockImplementation(() =>
+      Promise.reject({ data: errorMock }));
+    })
+    afterEach(function(){
+      mockAxios.post.mockClear()
+      mockAxios.get.mockClear()
+    })
+    it('loads err on GET err',async() => {
+      const component = await mount(<MessageApp/>);
+      await component.update()
+      expect(mockAxios.get).toHaveBeenCalledTimes(1);
+      expect(component.state().error).toEqual({data:"error text from json mock"});
+      expect(component.find('#error').text()).toBe('Error: error text from json mock');
+    });
+    it('loads err on GET err',async() => {
+      const component = await mount(<MessageApp/>);
+      await component.update()
+      expect(mockAxios.get).toHaveBeenCalledTimes(1);
+      expect(component.state().error).toEqual({data:"error text from json mock"});
+      expect(component.find('#error').text()).toBe('Error: error text from json mock');
+    });
   });
-});
